@@ -1,0 +1,157 @@
+trigger:
+- main  # Replace with your branch name
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  artifactName: 'express-app-artifact'
+
+stages:
+# =====================
+# Deliver Stage
+# =====================
+- stage: Deliver
+  displayName: Deliver Stage
+  jobs:
+  - job: BuildAndRelease
+    displayName: Build and Release Artifact
+    steps:
+    # Install dependencies
+    - task: UseNode@2
+      displayName: 'Install Node.js'
+      inputs:
+        versionSpec: '16.x' # Ensure Node.js version matches your project
+        checkLatest: true
+
+    - script: npm install
+      displayName: 'Install Dependencies'
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+# =====================
+# Build Stage
+# =====================
+- stage: Build
+  jobs:
+  - job: BuildMicroservices
+    displayName: Build All Microservices
+    steps:
+    - script: |
+        cd microservices/auth-service
+        npm install
+        npm run build
+      displayName: 'Build Auth Service'
+    - script: |
+        cd microservices/vital-signs-service
+        npm install
+        npm run build
+      displayName: 'Build Vital Signs Service'
+
+  - job: BuildMicrofrontends
+    displayName: Build All Microfrontends
+    steps:
+    - script: |
+        cd microfrontends/auth-microfrontend
+        npm install
+        npm run build
+      displayName: 'Build Auth Microfrontend'
+    - script: |
+        cd microfrontends/vital-signs-microfrontend
+        npm install
+        npm run build
+      displayName: 'Build Vital Signs Microfrontend'
+
+# =====================
+# Archive and Publish Artifacts
+# =====================
+- stage: PublishArtifacts
+  dependsOn: Build
+  jobs:
+  - job: ArchiveAndPublish
+    displayName: Archive and Publish Build Artifacts
+    steps:
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'microservices/auth-service/dist'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-service.zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'microservices/vital-signs-service/dist'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-service.zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'microfrontends/auth-microfrontend/dist'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-microfrontend.zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'microfrontends/vital-signs-microfrontend/dist'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-microfrontend.zip'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish All Artifacts'
+
+
+# =====================
+# Deploy to Dev Env Stage
+# =====================
+- stage: DeployToDev
+  displayName: Deploy to Development Environment
+  dependsOn: Deliver
+  jobs:
+  - job: DeployToDev
+    displayName: Deploy to Dev Environment
+    steps:
+    - script: echo "Deploying to Dev Environment"
+      displayName: 'Mock Deploy to Dev'
+    - script: echo "Starting the application in Dev Environment"
+      displayName: 'Launch the Application'
+
+# =====================
+# Deploy to QAT Env Stage
+# =====================
+- stage: DeployToQAT
+  displayName: Deploy to QAT Environment
+  dependsOn: DeployToDev
+  jobs:
+  - job: DeployToQAT
+    displayName: Deploy to QAT Environment
+    steps:
+    - script: echo "Deploying to QAT Environment"
+      displayName: 'Mock Deploy to QAT'
+    - script: echo "Starting the application in QAT Environment"
+      displayName: 'Launch the Application'
+
+# =====================
+# Deploy to Staging Env Stage
+# =====================
+- stage: DeployToStaging
+  displayName: Deploy to Staging Environment
+  dependsOn: DeployToQAT
+  jobs:
+  - job: DeployToStaging
+    displayName: Deploy to Staging Environment
+    steps:
+    - script: echo "Deploying to Staging Environment"
+      displayName: 'Mock Deploy to Staging'
+    - script: echo "Starting the application in Staging Environment"
+      displayName: 'Launch the Application'
+
+# =====================
+# Deploy to Production Env Stage
+# =====================
+- stage: DeployToProduction
+  displayName: Deploy to Production Environment
+  dependsOn: DeployToStaging
+  jobs:
+  - job: DeployToProduction
+    displayName: Deploy to Production Environment
+    steps:
+    - script: echo "Deploying to Production Environment"
+      displayName: 'Mock Deploy to Production'
+    - script: echo "Starting the application in Production Environment"
+      displayName: 'Launch the Application'
