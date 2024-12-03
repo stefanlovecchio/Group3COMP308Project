@@ -8,22 +8,17 @@ export default defineConfig({
     federation({
       name: 'shellApp',
       remotes: {
-        authMicroFrontend: 'http://localhost:5001/remoteEntry.js',
+        authMicroFrontend: 'http://localhost:5001/assets/remoteEntry.js', 
       },
       shared: ['react', 'react-dom', '@apollo/client', 'graphql'],
     }),
   ],
   server: {
-    port: 5173,
+    port: 5173, 
   },
   build: {
-    target: 'esnext', // Allows top-level await
+    target: 'esnext',
     minify: false,
     cssCodeSplit: false,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
   },
 });
