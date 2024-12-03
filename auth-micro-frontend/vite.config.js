@@ -9,7 +9,7 @@ export default defineConfig({
       name: 'authMicroFrontend',
       filename: 'remoteEntry.js',
       exposes: {
-        './App': './src/AuthApp.jsx', // Ensure the path to `AuthApp.jsx` is correct
+        './App': './src/AuthApp.jsx', 
       },
       shared: ['react', 'react-dom'],
     }),
