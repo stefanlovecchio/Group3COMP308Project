@@ -3,23 +3,25 @@ import react from '@vitejs/plugin-react';
 import federation from '@originjs/vite-plugin-federation';
 
 export default defineConfig({
+  build: { target: 'esnext', // or 'es2022' }, optimizeDeps: { esbuildOptions: { target: 'esnext', // or 'es2022' },
+  },
     plugins: [
         react(),
         federation({
             name: 'vitalSignsMicroFrontend',
             filename: 'remoteEntry.js', 
             exposes: {
-                './VitalSigns': './main.jsx', 
+                './src/components/VitalSigns.jsx': './src/main.jsx', 
             },
 
             shared: {
     react: {
-      singleton: true, // Use only one version
-      requiredVersion: '^18.0.0',
+      singleton: true, 
+      
     },
     'react-dom': {
       singleton: true,
-      requiredVersion: '^18.0.0',
+      
     },
   },
 
