@@ -4,11 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+
     "dev": "vite --port 5001 --strictPort",
     "build": "vite build",
     "lint": "eslint .",
      "preview": "vite preview --port 5001 --strictPort",
     "start-mf": "npm run build && npm run preview"
+
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
