@@ -3,6 +3,16 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+
+  /* Centering both horizontally and vertically */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  /* Set a height to ensure vertical centering */
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .logo {

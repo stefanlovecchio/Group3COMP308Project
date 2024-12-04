@@ -9,6 +9,7 @@ export default defineConfig({
       name: 'shellApp',
       remotes: {
         authMicroFrontend: 'http://localhost:5001/assets/remoteEntry.js', 
+        vitalSignsMicroFrontend: 'http://localhost:5002/assets/remoteEntry1.js',
       },
       shared: ['react', 'react-dom', '@apollo/client', 'graphql'],
     }),

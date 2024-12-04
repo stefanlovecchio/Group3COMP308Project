@@ -9,7 +9,7 @@ export default defineConfig({
         react(),
         federation({
             name: 'vitalSignsMicroFrontend',
-            filename: 'remoteEntry.js', 
+            filename: 'remoteEntry1.js', 
             exposes: {
                 './src/components/VitalSigns.jsx': './src/main.jsx', 
             },

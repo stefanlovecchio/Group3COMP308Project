@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Signup from './components/signup';
 import Login from './components/login';
 import Logout from './components/logout';
+import './App.css';
 
 const App = () => {
    const [token, setToken] = useState(null);
