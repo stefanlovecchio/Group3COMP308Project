@@ -35,10 +35,10 @@ const AuthMutation = new GraphQLObjectType({
                     //create & save user
                     const user = new User({ username, email, password: hashedPassword });
                     await user.save();
-                    console.log('User saved successfully');
+                    
                     return "User registered successfully!";
                 } catch (error) {
-                    console.error('Error in signup mutation:', error.message);
+                    c
                     throw new Error (`Signup failed: ${error.message}`);
                 }
             }
