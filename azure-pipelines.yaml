@@ -40,31 +40,31 @@ stages:
 - stage: Build
   jobs:
   - job: BuildMicroservices
-    displayName: Build All Microservices
+    displayName: Start All Microservices
     steps:
     - script: |
-        cd microservices/auth-service
+        cd auth-micro-backend
         npm install
-        npm run build
+        npm run start
       displayName: 'Build Auth Service'
     - script: |
-        cd microservices/vital-signs-service
+        cd vital-signs-microservice
         npm install
-        npm run build
+        npm run dev
       displayName: 'Build Vital Signs Service'
 
   - job: BuildMicrofrontends
     displayName: Build All Microfrontends
     steps:
     - script: |
-        cd microfrontends/auth-microfrontend
+        cd auth-micro-frontend
         npm install
-        npm run build
+        npm run start-mf
       displayName: 'Build Auth Microfrontend'
     - script: |
-        cd microfrontends/vital-signs-microfrontend
+        cd vital-signs-micro-frontend
         npm install
-        npm run build
+        npm run start-mf
       displayName: 'Build Vital Signs Microfrontend'
 
 # =====================
@@ -77,23 +77,35 @@ stages:
     displayName: Archive and Publish Build Artifacts
     steps:
     - task: ArchiveFiles@2
+      displayName: 'Archive Auth Service'
       inputs:
-        rootFolderOrFile: 'microservices/auth-service/dist'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-service.zip'
+        rootFolderOrFile: '$(Build.SourcesDirectory)/auth-micro-backend'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-micro-backend.zip'
+    - task: ArchiveFiles@2
+      displayName: 'Archive Vital Signs Service'
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)/vital-signs-microservice'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-microservice.zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'microservices/vital-signs-service/dist'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-service.zip'
+        rootFolderOrFile: '$(Build.SourcesDirectory)/auth-micro-frontend/dist'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-micro-frontend.zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'microfrontends/auth-microfrontend/dist'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-microfrontend.zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: 'microfrontends/vital-signs-microfrontend/dist'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-microfrontend.zip'
+        rootFolderOrFile: '$(Build.SourcesDirectory)/vital-signs-micro-frontend/dist'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-micro-frontend.zip'
+  - job: PublishArtifacts
+    displayName: Publish Artifacts
+    steps:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish All Artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
 
 
 # =====================
