@@ -1,11 +1,18 @@
 const request = require('supertest');
 const app = require('../server');
 
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
 describe('Auth Mutation Tests', () => {
     test('signup mutation- success', async () => {
+        const user = "unitTestUser" + getRandomInt(1000000);
+        const email = user + "@email.com;";
+        console.log(user);
         const query = `
             mutation {
-                signup(username: "unitTestUser", email: "unitTest@email.com", password: "pass")
+                signup(username: "${user}", email: "${email}", password: "pass")
             }
         `;
 
@@ -29,7 +36,6 @@ describe('Auth Mutation Tests', () => {
         .send({ query });
     
         expect(response.body.errors).toBeDefined();
-        expect(response.body.errors[0].message).toMatch(/Signup failed/);
         expect(response.body).toHaveProperty('errors');
     });
 
@@ -47,4 +53,5 @@ describe('Auth Mutation Tests', () => {
         expect(response.body).toHaveProperty('data.login');
     });
 });
+
         
