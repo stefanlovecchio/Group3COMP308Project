@@ -17,6 +17,12 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true 
 }));
 
-app.listen(4000, () => {
-    console.log('Authentication Microservice running on port 4000');
-});
+// Export the app instance for testing
+module.exports = app;
+
+// Start the server if not in a test environment
+if (require.main === module) {
+    app.listen(4000, () => {
+        console.log('Authentication Microservice running on port 4000');
+    });
+}
