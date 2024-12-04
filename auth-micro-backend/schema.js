@@ -25,10 +25,22 @@ const AuthMutation = new GraphQLObjectType({
                 password: { type: GraphQLString }
             },
             async resolve(_, { username, email, password }) {
-                const hashedPassword = await bcrypt.hash(password, 10);
-                const user = new User({ username, email, password: hashedPassword });
-                await user.save();
-                return "User registered successfully!";
+                try {
+                    //validate inputs
+                    if (!username || !email || !password) {
+                        throw new Error('All fields (username, email, password) are required.');
+                    }
+                    //hash password
+                    const hashedPassword = await bcrypt.hash(password, 10);
+                    //create & save user
+                    const user = new User({ username, email, password: hashedPassword });
+                    await user.save();
+                    console.log('User saved successfully');
+                    return "User registered successfully!";
+                } catch (error) {
+                    console.error('Error in signup mutation:', error.message);
+                    throw new Error (`Signup failed: ${error.message}`);
+                }
             }
         },
         login: {
