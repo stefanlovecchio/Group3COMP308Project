@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1733347291452" clover="3.2.0">
-  <project timestamp="1733347291452" name="All files">
-    <metrics statements="53" coveredstatements="33" conditionals="15" coveredconditionals="7" methods="7" coveredmethods="3" elements="75" coveredelements="43" complexity="0" loc="53" ncloc="53" packages="2" files="3" classes="3"/>
+<coverage generated="1733432092294" clover="3.2.0">
+  <project timestamp="1733432092294" name="All files">
+    <metrics statements="52" coveredstatements="33" conditionals="15" coveredconditionals="7" methods="7" coveredmethods="3" elements="74" coveredelements="43" complexity="0" loc="52" ncloc="52" packages="2" files="3" classes="3"/>
     <package name="auth-micro-backend">
-      <metrics statements="50" coveredstatements="30" conditionals="15" coveredconditionals="7" methods="7" coveredmethods="3"/>
+      <metrics statements="49" coveredstatements="30" conditionals="15" coveredconditionals="7" methods="7" coveredmethods="3"/>
       <file name="schema.js" path="C:\Users\earth\source\repos\COMP367-Group5\auth-micro-backend\schema.js">
-        <metrics statements="34" coveredstatements="17" conditionals="13" coveredconditionals="6" methods="4" coveredmethods="2"/>
+        <metrics statements="33" coveredstatements="17" conditionals="13" coveredconditionals="6" methods="4" coveredmethods="2"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -19,10 +19,9 @@
         <line num="34" count="1" type="stmt"/>
         <line num="36" count="1" type="stmt"/>
         <line num="37" count="1" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="39" count="0" type="stmt"/>
-        <line num="41" count="2" type="stmt"/>
-        <line num="42" count="2" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
         <line num="53" count="1" type="stmt"/>
         <line num="54" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="56" count="0" type="stmt"/>
