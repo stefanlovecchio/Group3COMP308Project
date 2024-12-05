@@ -15,7 +15,7 @@ stages:
     pool:
       name: Default # Or the name of your custom agent pool
       demands:
-      - agent.name -equals self-hosted-agent-name
+      - agent.name -equals self-hosted-agent
     steps:
     - script: |
         cd auth-micro-backend
