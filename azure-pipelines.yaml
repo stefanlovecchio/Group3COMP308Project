@@ -1,34 +1,5 @@
 trigger:
-- main  # Replace with your branch name
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-variables:
-  artifactName: 'express-app-artifact'
-
-stages:
-# =====================
-# Deliver Stage
-# =====================
-- stage: Deliver
-  displayName: Deliver Stage
-  jobs:
-  - job: BuildAndRelease
-    displayName: Build and Release Artifact
-    steps:
-    # Install dependencies
-    - task: UseNode@2
-      displayName: 'Install Node.js'
-      inputs:
-        versionSpec: '16.x' # Ensure Node.js version matches your project
-        checkLatest: true
-
-    - script: npm install
-      displayName: 'Install Dependencies'
-
-trigger:
-- main
+- master
 
 pool:
   vmImage: 'ubuntu-latest'
