@@ -58,6 +58,14 @@ stages:
               workingDir: auth-micro-backend
               verbose: false
               customCommand: test -- --coverage
+          
+          - script: |
+              echo "Checking for coverage file..."
+              ls auth-micro-backend/coverage
+              cat auth-micro-backend/coverage/lcov.info
+            displayName: Debug Coverage Report Path
+            workingDirectory: $(System.DefaultWorkingDirectory)
+
 
           # Prepare SonarQube Analysis
           - task: SonarSource.sonarqube.15B84CA1-B62F-4A2A-A403-89B77A063157.SonarQubePrepare@7
