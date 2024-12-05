@@ -1,243 +1,69 @@
-trigger:
-- master
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-stages:
-# =====================
-# Build Stage
-# =====================
-- stage: Build
-  jobs:
-  - job: BuildMicroservices
-    displayName: Start All Microservices
-    steps:
-    - script: |
-        cd auth-micro-backend
-        npm install
-        npm run start
-      displayName: 'Build Auth Service'
-    - script: |
-        cd vital-signs-microservice
-        npm installtrigger:
   branches:
     include:
-      - main
-
+    - main
 name: $(date:yyyyMMdd)$(rev:.r)
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    name: Default
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: Npm@1
+    displayName: npm install
+    inputs:
+      workingDir: auth-micro-frontend
+      verbose: false
+  - task: Npm@1
+    displayName: npm install
+    inputs:
+      workingDir: auth-micro-backend
+      verbose: false
+  - task: SonarSource.sonarqube.15B84CA1-B62F-4A2A-A403-89B77A063157.SonarQubePrepare@7
+    displayName: Prepare analysis on SonarQube Server
+    inputs:
+      SonarQube: 9566e120-0d17-47d4-82e9-074f904af399
+      scannerMode: cli
+      configMode: manual
+      cliProjectKey: COMP367-Group5_COMP367-Group5_AZODG3CAJiP_amtEclN-
+      projectKey: COMP367-Group5_COMP367-Group5_AZODG3CAJiP_amtEclN-
+      cliSources: auth-micro-backend
+      extraProperties: "# Additional properties that will be passed to the scanner, \n# Put one key=value per line, example:\n# sonar.exclusions=**/*.bin,node_modules/**, coverage/**\nsonar.javascript.lcov.reportPaths=coverage/lcov.info\n\n"
+  - task: Npm@1
+    displayName: npm run build
+    inputs:
+      command: custom
+      workingDir: auth-micro-frontend
+      verbose: false
+      customCommand: run build
+  - task: Npm@1
+    displayName: npm test
+    inputs:
+      command: custom
+      workingDir: auth-micro-backend
+      verbose: false
+      customCommand: test -- --coverage
+  - task: CmdLine@2
+    displayName: Command Line Script
+    inputs:
+      script: >-
+        set Build.SourceBranchName=
 
-stages:
-  - stage: BuildStage
-    displayName: Build Stage
-    jobs:
-      - job: BuildJob
-        displayName: Build Job
-        pool:
-          name: Default
-        steps:
-          - checkout: self
-            clean: true
-            fetchTags: false
+        set Build.SourceBranch=
+  - task: SonarSource.sonarqube.6D01813A-9589-4B15-8491-8164AEB38055.SonarQubeAnalyze@7
+    displayName: Run Code Analysis
+  - task: SonarSource.sonarqube.291ed61f-1ee4-45d3-b1b0-bf822d9095ef.SonarQubePublish@7
+    displayName: Publish Quality Gate Result
+  - task: ArchiveFiles@2
+    displayName: Archive files
+    inputs:
+      rootFolderOrFile: $(System.DefaultWorkingDirectory)
+      includeRootFolder: false
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifacts: drop'
+    inputs:
+      TargetPath: '\\my\share\$(Build.DefinitionName)\$(Build.BuildNumber)'
+...
 
-          # Install dependencies for frontend
-          - task: Npm@1
-            displayName: Install Frontend Dependencies
-            inputs:
-              workingDir: auth-micro-frontend
-              verbose: false
-
-          # Install dependencies for backend
-          - task: Npm@1
-            displayName: Install Backend Dependencies
-            inputs:
-              workingDir: auth-micro-backend
-              verbose: false
-
-          # Build frontend
-          - task: Npm@1
-            displayName: Build Frontend
-            inputs:
-              command: custom
-              workingDir: auth-micro-frontend
-              verbose: false
-              customCommand: run build
-
-  - stage: TestStage
-    displayName: Test and Code Coverage Stage
-    dependsOn: BuildStage
-    jobs:
-      - job: TestJob
-        displayName: Test and Code Coverage
-        pool:
-          name: Default
-        steps:
-          # Run unit tests and generate code coverage
-          - task: Npm@1
-            displayName: Run Backend Tests
-            inputs:
-              command: custom
-              workingDir: auth-micro-backend
-              verbose: false
-              customCommand: test -- --coverage
-
-          # Prepare SonarQube Analysis
-          - task: SonarSource.sonarqube.15B84CA1-B62F-4A2A-A403-89B77A063157.SonarQubePrepare@7
-            displayName: Prepare analysis on SonarQube Server
-            inputs:
-              SonarQube: 9566e120-0d17-47d4-82e9-074f904af399
-              scannerMode: cli
-              configMode: manual
-              cliProjectKey: COMP367-Group5_COMP367-Group5_AZODG3CAJiP_amtEclN-
-              projectKey: COMP367-Group5_COMP367-Group5_AZODG3CAJiP_amtEclN-
-              cliSources: auth-micro-backend
-              extraProperties: |
-                sonar.javascript.lcov.reportPaths=coverage/lcov.info
-
-          # Run SonarQube Code Analysis
-          - task: SonarSource.sonarqube.6D01813A-9589-4B15-8491-8164AEB38055.SonarQubeAnalyze@7
-            displayName: Run Code Analysis
-
-          # Publish SonarQube Quality Gate Results
-          - task: SonarSource.sonarqube.291ed61f-1ee4-45d3-b1b0-bf822d9095ef.SonarQubePublish@7
-            displayName: Publish Quality Gate Result
-
-  - stage: ArchiveStage
-    displayName: Archive Artifacts Stage
-    dependsOn: TestStage
-    jobs:
-      - job: ArchiveJob
-        displayName: Archive and Publish Artifacts
-        pool:
-          name: Default
-        steps:
-          # Archive Files
-          - task: ArchiveFiles@2
-            displayName: Archive files
-            inputs:
-              rootFolderOrFile: $(System.DefaultWorkingDirectory)
-              includeRootFolder: false
-
-          # Publish Artifacts
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish artifacts: drop'
-            inputs:
-              TargetPath: '\\my\share\$(Build.DefinitionName)\$(Build.BuildNumber)'
-
-        npm run dev
-      displayName: 'Build Vital Signs Service'
-
-  - job: BuildMicrofrontends
-    displayName: Build All Microfrontends
-    steps:
-    - script: |
-        cd auth-micro-frontend
-        npm install
-        npm run start-mf
-      displayName: 'Build Auth Microfrontend'
-    - script: |
-        cd vital-signs-micro-frontend
-        npm install
-        npm run start-mf
-      displayName: 'Build Vital Signs Microfrontend'
-
-# =====================
-# Archive and Publish Artifacts
-# =====================
-- stage: PublishArtifacts
-  dependsOn: Build
-  jobs:
-  - job: ArchiveAndPublish
-    displayName: Archive and Publish Build Artifacts
-    steps:
-    - task: ArchiveFiles@2
-      displayName: 'Archive Auth Service'
-      inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/auth-micro-backend'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-micro-backend.zip'
-    - task: ArchiveFiles@2
-      displayName: 'Archive Vital Signs Service'
-      inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/vital-signs-microservice'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-microservice.zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/auth-micro-frontend/dist'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/auth-micro-frontend.zip'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/vital-signs-micro-frontend/dist'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-micro-frontend.zip'
-  - job: PublishArtifacts
-    displayName: Publish Artifacts
-    steps:
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish All Artifacts'
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-
-
-# =====================
-# Deploy to Dev Env Stage
-# =====================
-- stage: DeployToDev
-  displayName: Deploy to Development Environment
-  dependsOn: Deliver
-  jobs:
-  - job: DeployToDev
-    displayName: Deploy to Dev Environment
-    steps:
-    - script: echo "Deploying to Dev Environment"
-      displayName: 'Mock Deploy to Dev'
-    - script: echo "Starting the application in Dev Environment"
-      displayName: 'Launch the Application'
-
-# =====================
-# Deploy to QAT Env Stage
-# =====================
-- stage: DeployToQAT
-  displayName: Deploy to QAT Environment
-  dependsOn: DeployToDev
-  jobs:
-  - job: DeployToQAT
-    displayName: Deploy to QAT Environment
-    steps:
-    - script: echo "Deploying to QAT Environment"
-      displayName: 'Mock Deploy to QAT'
-    - script: echo "Starting the application in QAT Environment"
-      displayName: 'Launch the Application'
-
-# =====================
-# Deploy to Staging Env Stage
-# =====================
-- stage: DeployToStaging
-  displayName: Deploy to Staging Environment
-  dependsOn: DeployToQAT
-  jobs:
-  - job: DeployToStaging
-    displayName: Deploy to Staging Environment
-    steps:
-    - script: echo "Deploying to Staging Environment"
-      displayName: 'Mock Deploy to Staging'
-    - script: echo "Starting the application in Staging Environment"
-      displayName: 'Launch the Application'
-
-# =====================
-# Deploy to Production Env Stage
-# =====================
-- stage: DeployToProduction
-  displayName: Deploy to Production Environment
-  dependsOn: DeployToStaging
-  jobs:
-  - job: DeployToProduction
-    displayName: Deploy to Production Environment
-    steps:
-    - script: echo "Deploying to Production Environment"
-      displayName: 'Mock Deploy to Production'
-    - script: echo "Starting the application in Production Environment"
-      displayName: 'Launch the Application'
