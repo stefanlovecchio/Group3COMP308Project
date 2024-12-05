@@ -12,6 +12,10 @@ stages:
   jobs:
   - job: BuildMicroservices
     displayName: Start All Microservices
+    pool:
+      name: Default # Or the name of your custom agent pool
+      demands:
+      - agent.name -equals self-hosted-agent-name
     steps:
     - script: |
         cd auth-micro-backend
