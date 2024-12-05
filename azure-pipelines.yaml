@@ -66,11 +66,11 @@ stages:
         archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-microservice.zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/auth-micro-frontend/dist'
+        rootFolderOrFile: '$(Build.SourcesDirectory)/auth-micro-frontend/'
         archiveFile: '$(Build.ArtifactStagingDirectory)/auth-micro-frontend.zip'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/vital-signs-micro-frontend/dist'
+        rootFolderOrFile: '$(Build.SourcesDirectory)/vital-signs-micro-frontend'
         archiveFile: '$(Build.ArtifactStagingDirectory)/vital-signs-micro-frontend.zip'
   - job: PublishArtifacts
     displayName: Publish Artifacts
