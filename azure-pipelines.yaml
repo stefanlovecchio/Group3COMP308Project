@@ -78,7 +78,9 @@ stages:
               projectKey: COMP367-Group5_COMP367-Group5_AZODG3CAJiP_amtEclN-
               cliSources: auth-micro-backend
               extraProperties: |
-                sonar.javascript.lcov.reportPaths=coverage/lcov.info
+                sonar.javascript.lcov.reportPaths=auth-micro-backend/coverage/lcov.info
+                sonar.exclusions=**/coverage/**,**/node_modules/**
+
 
           # Run SonarQube Code Analysis
           - task: SonarSource.sonarqube.6D01813A-9589-4B15-8491-8164AEB38055.SonarQubeAnalyze@7
