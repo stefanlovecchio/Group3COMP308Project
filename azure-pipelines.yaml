@@ -84,7 +84,7 @@ stages:
 # =====================
 - stage: DeployToDev
   displayName: Deploy to Development Environment
-  dependsOn: Deliver
+  dependsOn: PublishArtifacts
   jobs:
   - job: DeployToDev
     displayName: Deploy to Dev Environment
