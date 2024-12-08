@@ -49,7 +49,7 @@ const typeDefs = gql`
     }
 
     type Query {
-        getVitalSigns(userId: ID): [VitalSign]
+        getVitalSigns(userId: ID, username: String): [VitalSign]
     }
 
     type Mutation {
@@ -64,20 +64,48 @@ app.use(bodyParser.json());
 //define GraphQL resolvers
 const resolvers = {
     Query: {
-        getVitalSigns: async (_, { userId }, {user}) => {
-            if (!user && !userId) {
-                throw new Error("Unauthorized");
+        getVitalSigns: async (_, { userId, username }) => {
+            if (userId) {                             
+                try {
+                    const vitalSigns = await vitalSign.find({ userId: userId });                    
+                    return vitalSigns;
+                } catch (error) {
+                    throw new Error("Error fetching vital signs: " + error.message);
+                }
             }
-            try {
-                const queryUserId = userId || user._id;
-                const vitalSigns = await vitalSign.find({ userId: queryUserId });
-                console.log('Backend vitalSigns:', vitalSigns);
-                return vitalSigns;
-            } catch (error) {
-                throw new Error("Error fetching vital signs: " + error.message);
-            }
+            else if (username) {
+                const vitalSigns = await vitalSign.aggregate([
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'user'
+                    }
+                },
+                {
+                    $match: {
+                        'user.username': { $regex: username, $options: 'i' }
+                    }
+                },
+                {
+                    $project: {
+                        userId: 1,
+                        heartRate: 1,
+                        bloodPressure: 1,
+                        temperature: 1,
+                        createdAt: 1
+                    }
+                }
+            ]);
+            return vitalSigns;
+        } else {
+            throw new Error("Invalid username or userId");
         }
-    },
+    }
+},
+        
+    
     Mutation: {
         addVitalSign: async (_, { userId, heartRate, bloodPressure, temperature }) => {
             try {

@@ -60,7 +60,7 @@ const AuthMutation = new GraphQLObjectType({
                 if (!isValid) throw new Error("Invalid credentials");
 
                 console.log("JWT_SECRET for signing:", process.env.JWT_SECRET); 
-                return jwt.sign({ userId: user.id, accountType: user.accountType }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                return jwt.sign({ user: user, userId: user.id, accountType: user.accountType }, process.env.JWT_SECRET, { expiresIn: '1h' });
             }
         },
         logout: {
