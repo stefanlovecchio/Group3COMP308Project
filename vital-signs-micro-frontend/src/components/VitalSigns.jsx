@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import React, { useState, useEffect } from 'react';
 import { useMutation, useLazyQuery, gql } from '@apollo/client';
 import { useAuth } from './AuthContext';
@@ -185,6 +186,10 @@ const VitalSigns = () => {
       {error && <p>Error fetching vital signs: {error.message}</p>}
       <ul>
   {data?.getVitalSigns?.map((vs) => {
+    const timestamp = vs.createdAt.toString().length > 10 ? vs.createdAt / 1000 : vs.createdAt; 
+    const date = new Date(timestamp * 1000); // Convert to milliseconds if needed const formattedDate = format(date, 'yyyy-MM-dd HH:mm:ss');
+    const formattedDate = format(date, 'yyyy-MM-dd HH:mm:ss');
+
     return (
       <li key={vs.id}>
       <form
@@ -223,6 +228,10 @@ const VitalSigns = () => {
                     handleInputChange(vs.id, 'temperature', e.target.value)
                   }
                 />
+              </div>
+              <div>
+                <label>Created At:</label>
+                <p>{formattedDate} </p>
               </div>
               <button type="submit">Update</button>
             </form>

@@ -22,18 +22,21 @@ const AuthMutation = new GraphQLObjectType({
             args: {
                 username: { type: GraphQLString },
                 email: { type: GraphQLString },
-                password: { type: GraphQLString }
+                password: { type: GraphQLString },
+                accountType: { type: GraphQLString },
+                firstName: { type: GraphQLString },
+                lastName: { type: GraphQLString }
             },
-            async resolve(_, { username, email, password }) {
+            async resolve(_, { username, email, password, accountType, firstName, lastName }) {
                 try {
                     //validate inputs
-                    if (!username || !email || !password) {
-                        throw new Error('All fields (username, email, password) are required.');
+                    if (!username || !email || !password || !accountType || !firstName || !lastName) {
+                        throw new Error('All fields are required.');
                     }
                     //hash password
                     const hashedPassword = await bcrypt.hash(password, 10);
                     //create & save user
-                    const user = new User({ username, email, password: hashedPassword });
+                    const user = new User({ username, email, accountType, firstName, lastName, password: hashedPassword });
                     await user.save();
                     
                     return "User registered successfully!";
@@ -57,7 +60,7 @@ const AuthMutation = new GraphQLObjectType({
                 if (!isValid) throw new Error("Invalid credentials");
 
                 console.log("JWT_SECRET for signing:", process.env.JWT_SECRET); 
-                return jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                return jwt.sign({ userId: user.id, accountType: user.accountType }, process.env.JWT_SECRET, { expiresIn: '1h' });
             }
         },
         logout: {
