@@ -26,8 +26,8 @@ const ADD_VITAL_SIGN = gql`
 `;
 
 const GET_VITAL_SIGNS = gql`
-  query GetVitalSigns($userId: ID!) {
-    getVitalSigns(userId: $userId) {
+  query GetVitalSigns($username: String) {
+    getVitalSigns(username: $username) {
       id
       userId
       heartRate
@@ -61,7 +61,7 @@ const GET_VITAL_SIGNS = gql`
 `;
 
 const VitalSigns = () => {
-  const {user } = useAuth();
+
   const [formData, setFormData] = useState({
     userId: '',
     heartRate: '',
@@ -73,7 +73,15 @@ const VitalSigns = () => {
   const [addVitalSign] = useMutation(ADD_VITAL_SIGN);
   const [updateVitalSign] = useMutation(UPDATE_VITAL_SIGN);
   const [formState, setFormState] = useState({});
+  const [user, setUser] = React.useState(null);
 
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      console.log(user.lastName);
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
   // Automatically fetch vital signs for logged-in user
   React.useEffect(() => {
     if (user) {
@@ -114,11 +122,7 @@ const VitalSigns = () => {
   };
 
   const handleFetchVitalSigns = () => {
-    if (!formData.userId) {
-      alert("Please enter a valid user id");
-      return;
-    }
-    fetchVitalSigns({ variables: { userId: formData.userId } });
+    fetchVitalSigns({ variables: { username: formData.username } });
   };
 
   const handleAddVitalSign = async () => {
@@ -174,9 +178,9 @@ const VitalSigns = () => {
       />
       <input
         type="text"
-        placeholder="User ID"
-        value={formData.userId}
-        onChange={e => setFormData({ ...formData, userId: e.target.value })}
+        placeholder="Username"
+        value={formData.username}
+        onChange={e => setFormData({ ...formData, username: e.target.value })}
       />
       <button onClick={handleAddVitalSign}>Add Vital Sign</button>
       <button onClick={handleFetchVitalSigns}>Fetch Vital Signs</button>
