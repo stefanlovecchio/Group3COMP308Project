@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useMutation, useLazyQuery, gql } from '@apollo/client';
-import { useAuth } from './AuthContext';
+import { UserContext } from '../../../shell-app/src/UserProvider'; 
 
 const ADD_VITAL_SIGN = gql`
   mutation AddVitalSign(
@@ -73,21 +73,14 @@ const VitalSigns = () => {
   const [addVitalSign] = useMutation(ADD_VITAL_SIGN);
   const [updateVitalSign] = useMutation(UPDATE_VITAL_SIGN);
   const [formState, setFormState] = useState({});
-  const [user, setUser] = React.useState(null);
+  //const { user } = useContext(UserContext);
 
-  React.useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      console.log(user.lastName);
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
   // Automatically fetch vital signs for logged-in user
-  React.useEffect(() => {
-    if (user) {
+  /*useEffect(() => {
+    if (user && user.token) {
       fetchVitalSigns({ variables: { userId: user.id } });
     }
-  }, [user, fetchVitalSigns]);
+  }, [user, fetchVitalSigns]);*/
 
 
   const handleInputChange = (id, field, value) => {

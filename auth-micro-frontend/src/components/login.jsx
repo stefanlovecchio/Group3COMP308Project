@@ -1,23 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useMutation } from '@apollo/client';
 import { LOGIN } from '../graphql/auth';
+import PropTypes from 'prop-types';
+import  UserContext  from '../../../shell-app/src/UserProvider';
+import {decode } from 'jsonwebtoken';
 
-import jwt from 'jsonwebtoken'; // npm install jsonwebtoken --save
 
 const Login = ({ setToken }) => {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [login] = useMutation(LOGIN);
+   const setUser  = useContext(UserContext);
+
+    console.log('setUser:', setUser); // Debugging log
 
    const handleLogin = async (e) => {
        e.preventDefault();
        try {
            const { data } = await login({ variables: { email, password } });
-           const token = data.login;
-           const decodedToken = jwt.decode(token);
-           console.log("decoded token in login", decodedToken);
-           localStorage.setItem('user', JSON.stringify(decodedToken));
+           const token = data.login;           
            setToken(token); 
+           const decoded = decode(token);
+           console.log('Login Decoded token:', decoded);
+           //setUser({ token, ...decoded });
            alert('Login successful!');
            setEmail('');
            setPassword('');
@@ -36,5 +41,7 @@ const Login = ({ setToken }) => {
        </form>
    );
 };
-
+Login.propTypes = {
+    setToken: PropTypes.func.isRequired,
+  };
 export default Login;
